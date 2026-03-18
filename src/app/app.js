@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, css } from 'lit';
 import './pages/home-list/home-list.js';
 import './pages/error/error.js';
 
@@ -6,6 +6,17 @@ export class AppComponent extends LitElement {
   static properties = {
     currentPath: { state: true },
   };
+
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 100svh;
+      box-sizing: border-box;
+    }
+  `;
+
   constructor(parameters) {
     super();
     this.currentPath = window.location.pathname;

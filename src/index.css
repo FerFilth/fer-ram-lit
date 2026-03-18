@@ -3,17 +3,28 @@
   background-color: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    background-color: #16171d;
+   background-color: #fdfbf6 !important;
   }
 }
 
+*, *::before, *::after {
+box-sizing: border-box;
+}
+
+html, body {
+height: 100%;
+ overflow: hidden;
+}
+
+
 body {
   margin: 0;
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
+  display: block;
   min-width: 320px;
   min-height: 100svh;
   font-synthesis: none;
@@ -21,4 +32,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+app-root {
+  display: block;
+  width: 100%;
+  min-height: 100svh;
 }
