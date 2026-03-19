@@ -16,6 +16,7 @@ class RamStore {
     };
     this.listeners = new Set();
     this.debounceId = null;
+    this.abortController = null; 
   }
 
   /**
@@ -30,7 +31,7 @@ class RamStore {
    * @returns {() => boolean}
    */
   subscribe(listener) {
-    this.listeners.add(listener);
+      this.listeners.add(listener);
     listener(this.state); // snapshot inicial
     return () => this.listeners.delete(listener);
   }
@@ -48,31 +49,35 @@ class RamStore {
    * @param {string} name
    * @returns {Promise<any|null>}
    */
-  async fetchCharacters(page = 1, name = '') {
+  async fetchCharacters(page = 1, name = '', signal) {
     const res = await fetch(
       `https://rickandmortyapi.com/api/character?page=${page}&name=${encodeURIComponent(name)}`,
+      { signal },
     );
     if (!res.ok) return null;
     return res.json();
   }
 
-  /**
-   * Triggers a debounced API update for current search and page.
-   */
+  
   triggerUpdate() {
     clearTimeout(this.debounceId);
     this.setState({ loading: true });
 
+    // Si había un fetch anterior en curso, lo cancelamos
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
     this.debounceId = setTimeout(async () => {
       try {
         const { page, search } = this.state;
-        const data = await this.fetchCharacters(page, search);
+        const data = await this.fetchCharacters(page, search, this.abortController.signal);
         this.setState({
           characters: data?.results ?? [],
           collectionSize: data?.info?.count ?? 0,
           loading: false,
         });
-      } catch {
+      } catch (err) {
+        if (err.name === 'AbortError') return; // cancelado, no hacemos nada
         this.setState({
           characters: [],
           collectionSize: 0,
@@ -113,9 +118,7 @@ class RamStore {
     }
   }
 
-  /**
-   * Saves current favorites set into localStorage.
-   */
+  
   saveFavorites() {
     localStorage.setItem(
       this.FAVORITES_KEY,
@@ -133,7 +136,7 @@ class RamStore {
 
   /**
    * @param {number} characterId
-   * @returns {boolean} True if character is favorite after the toggle.
+   * @returns {boolean} True si el personaje es el favorito tras activar/desactivar la opcion
    */
   toggleFavorite(characterId) {
     const favorites = new Set(this.state.favorites);
