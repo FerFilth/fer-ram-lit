@@ -20,6 +20,8 @@ export class AppComponent extends LitElement {
   constructor(parameters) {
     super();
     this.currentPath = window.location.pathname;
+    this.searchQuery = this.getSearchQueryFromUrl();
+    this.applyStoredTheme();
 
     this.onPopState = () => {
       this.currentPath = window.location.pathname;
@@ -50,6 +52,18 @@ export class AppComponent extends LitElement {
       event.preventDefault();
       this.navigate(href);
     };
+  }
+
+  applyStoredTheme() {
+    const storedTheme = localStorage.getItem('theme');
+    const root = document.documentElement;
+
+    if (storedTheme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      return;
+    }
+
+    root.removeAttribute('data-theme');
   }
 
   toggleTheme() {

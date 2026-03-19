@@ -194,7 +194,6 @@ export class RamCard extends LitElement {
 	openModal() {
 		if (!this.character) return;
 
-		// Modal component is not migrated yet; expose the action as an event for the page.
 		this.dispatchEvent(
 			new CustomEvent('open-character-modal', {
 				detail: { character: this.character },

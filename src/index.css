@@ -7,6 +7,7 @@
   --surface-color: #ffffff;
   --primary-color: #0b57d0;
   --border-color: #cbced1;
+  --error-muted-color: #555555;
 
 
   --btn-primary-bg: #313628;
@@ -52,6 +53,7 @@
   --surface-color: #252733;
   --primary-color: #4da3ff;
   --border-color: #3f4153;
+  --error-muted-color: #f6f9ff;
 
   --btn-primary-bg: #f5f5f5;
   --btn-primary-text: #16171d;
@@ -61,7 +63,7 @@
   --btn-secondary-text: #f5f5f5;
   --btn-secondary-border: #3f4153;
 
-  --border-color-search: #FCBA04;
+  --border-color-search: #8b8b89;
 
   --badge-blue-bg: #195d88;
   --badge-purple-bg: #4c5da8;
@@ -84,6 +86,8 @@
   --danger-soft-text: #ffd8d8;
   --danger-solid-bg: #d66a6a;
   --danger-solid-text: #211214;
+
+ 
 }
 *,
 *::before,
