@@ -3,6 +3,7 @@ import { shadowReset } from '../../styles/shadow-reset.js';
 import '../../components/ram-input/ram-input.js';
 import '../../components/ram-grid/ram-grid.js';
 import '../../components/paginator/paginator.js';
+import '../../components/ram-modal/ram-modal.js';
 import { ramStore } from '../../services/ram.service.js';
 import { iconFonts } from '../../styles/icon-fonts.js';
 
@@ -24,6 +25,10 @@ export class HomeListPage extends LitElement {
     isLoading: { state: true },
     /** @type {boolean} */
     showOnlyFavorites: { state: true },
+    /** @type {RamCharacter | null} */
+    modalCharacter: { state: true },
+    /** @type {boolean} */
+    isModalOpen: { state: true },
   };
 
   static styles = [
@@ -270,10 +275,14 @@ export class HomeListPage extends LitElement {
     this.characters = [];
     this.isLoading = false;
     this.showOnlyFavorites = false;
+    this.modalCharacter = null;
+    this.isModalOpen = false;
     this.unsubscribe = null;
     this.onSearch = this.onSearch.bind(this);
     this.toggleFavorite = this.toggleFavorite.bind(this);
     this.onFavoriteChanged = this.onFavoriteChanged.bind(this);
+    this.onOpenCharacterModal = this.onOpenCharacterModal.bind(this);
+    this.onCloseCharacterModal = this.onCloseCharacterModal.bind(this);
   }
 
   connectedCallback() {
@@ -319,6 +328,21 @@ export class HomeListPage extends LitElement {
     );
   }
 
+  /**
+   * @param {CustomEvent<{character: RamCharacter}>} event
+   */
+  onOpenCharacterModal(event) {
+    const nextCharacter = event.detail?.character ?? null;
+    if (!nextCharacter) return;
+
+    this.modalCharacter = nextCharacter;
+    this.isModalOpen = true;
+  }
+
+  onCloseCharacterModal() {
+    this.isModalOpen = false;
+  }
+
   render() {
     const title = this.showOnlyFavorites
       ? 'Mis favoritos'
@@ -359,7 +383,11 @@ export class HomeListPage extends LitElement {
           </div>
 
           <div class="grid-scroll-container">
-            <div class="grid-slot" @favorite-change=${this.onFavoriteChanged}>
+            <div
+              class="grid-slot"
+              @favorite-change=${this.onFavoriteChanged}
+              @open-character-modal=${this.onOpenCharacterModal}
+            >
               ${this.showOnlyFavorites && this.characters.length === 0
                 ? html`
                     <div class="info-alert mt-4">
@@ -387,6 +415,12 @@ export class HomeListPage extends LitElement {
             <p>Datos proporcionados por la Rick and Morty API.</p>
           </footer>
         </div>
+
+        <ram-modal
+          .open=${this.isModalOpen}
+          .character=${this.modalCharacter}
+          @close-modal=${this.onCloseCharacterModal}
+        ></ram-modal>
       </main>
     `;
   }

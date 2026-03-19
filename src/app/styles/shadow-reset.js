@@ -39,6 +39,14 @@ export const shadowReset = css`
     border: none;
     padding: 0;
     cursor: pointer;
+    outline: none;
+    box-shadow: none;
+  }
+
+  button:focus,
+  button:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 `;
 
