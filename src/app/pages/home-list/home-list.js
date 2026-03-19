@@ -1,13 +1,44 @@
 import { LitElement, html, css } from 'lit';
 import { shadowReset } from '../../styles/shadow-reset.js';
+import '../../components/ram-input/ram-input.js';
+import '../../components/ram-grid/ram-grid.js';
+import '../../components/paginator/paginator.js';
+import { ramStore } from '../../services/ram.service.js';
+import { iconFonts } from '../../styles/icon-fonts.js';
+
+/**
+ * @typedef {Object} RamCharacter
+ * @property {number} id
+ * @property {string} name
+ * @property {string} image
+ */
+
+/**
+ * Main list page for browsing Rick and Morty characters.
+ */
 export class HomeListPage extends LitElement {
+  static properties = {
+    /** @type {RamCharacter[]} */
+    characters: { state: true },
+    /** @type {boolean} */
+    isLoading: { state: true },
+    /** @type {boolean} */
+    showOnlyFavorites: { state: true },
+  };
+
   static styles = [
     shadowReset,
+    iconFonts,
     css`
       :host {
-        background: var(--color-bg);
-        color: var(--color-text);
+        display: block;
+        background: var(--bg-color);
+        color: var(--text-color);
+        width: 100%;
+        min-height: 100%;
+        height: 100%;
       }
+
       .home-container {
         width: 100%;
         max-width: 1200px;
@@ -36,9 +67,10 @@ export class HomeListPage extends LitElement {
 
       .grid-content .action-bar {
         display: flex;
-        height: 45px;
+        min-height: 45px;
         justify-content: space-between;
         align-items: center;
+        gap: 12px;
       }
 
       .grid-scroll-container {
@@ -87,6 +119,7 @@ export class HomeListPage extends LitElement {
         border-radius: 8px;
         background: #e7f1ff;
         color: #084298;
+        text-align: center;
       }
 
       .icon-xl {
@@ -162,79 +195,147 @@ export class HomeListPage extends LitElement {
       .favorite-button.favorite-inactive .favorite-icon {
         color: #6c757d;
       }
+
+      .favorite-button-label {
+        font-weight: 600;
+      }
+
+      .grid-slot {
+        width: 100%;
+      }
+
+      .empty-favorites-icon {
+        font-variation-settings: 'FILL' 0;
+      }
+
+      @media (max-width: 720px) {
+        .grid-content .action-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .favorites-toolbar {
+          justify-content: space-between;
+        }
+      }
     `,
   ];
 
-  //   createRenderRoot() {
-  //     return this;
-  //   }
+  constructor() {
+    super();
+    this.characters = [];
+    this.isLoading = false;
+    this.showOnlyFavorites = false;
+    this.unsubscribe = null;
+    this.onSearch = this.onSearch.bind(this);
+    this.toggleFavorite = this.toggleFavorite.bind(this);
+    this.onFavoriteChanged = this.onFavoriteChanged.bind(this);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.unsubscribe = ramStore.subscribe((state) => {
+      this.isLoading = state.loading;
+      this.characters = this.showOnlyFavorites
+        ? state.characters.filter((item) => state.favorites.has(item.id))
+        : state.characters;
+    });
+
+    ramStore.triggerUpdate();
+  }
+
+  disconnectedCallback() {
+    if (typeof this.unsubscribe === 'function') {
+      this.unsubscribe();
+    }
+    super.disconnectedCallback();
+  }
+
+  /**
+   * @param {CustomEvent<string>} event
+   */
+  onSearch(event) {
+    ramStore.setSearch(event.detail ?? '');
+  }
+
+  toggleFavorite() {
+    this.showOnlyFavorites = !this.showOnlyFavorites;
+    const state = ramStore.getState();
+    this.characters = this.showOnlyFavorites
+      ? state.characters.filter((item) => state.favorites.has(item.id))
+      : state.characters;
+  }
+
+  onFavoriteChanged() {
+    if (!this.showOnlyFavorites) return;
+
+    const state = ramStore.getState();
+    this.characters = state.characters.filter((item) =>
+      state.favorites.has(item.id),
+    );
+  }
 
   render() {
+    const title = this.showOnlyFavorites
+      ? 'Mis favoritos'
+      : 'Wubba lubba dub dub!';
+    const favoriteLabel = this.showOnlyFavorites ? 'Home' : 'Mis favoritos';
+    const favoriteIcon = this.showOnlyFavorites ? 'home' : 'star';
+
     return html`
       <main class="home-container grid-home-page">
         <section class="section-row">
           <div class="full-col">
-            <h1 class="center-text mb-3">
-              {{ !showOnlyFavorites ? 'Wubba lubba dub dub!' : 'Mis favoritos'
-              }}
-            </h1>
+            <h1 class="center-text mb-3">${title}</h1>
             <p class="mb-3 center-text">
               Base de datos de personajes de Rick y Morty
             </p>
           </div>
         </section>
-        <!--
-          <div class="grid-content">
-            <div class="action-bar">
-              <app-ram-input
-                (item)="onSearch($event)"
-                [isLoading]="isLoading"
-              ></app-ram-input>
-              <div class="favorites-toolbar">
-                <span
-                  class=""
-                  [style]="
-            'font-weight: 600;
-         '
-          "
-                  >{{ showOnlyFavorites ? 'Home' : 'Mis favoritos' }}</span
-                >
-                <button
-                  class="favorite-button"
-                  [class.favorite-active]="showOnlyFavorites"
-                  [class.favorite-inactive]="!showOnlyFavorites"
-                  [class.is-active]="showOnlyFavorites"
-                  (click)="toggleFavorite()"
-                >
-                  <span class="material-symbols-outlined favorite-icon">
-                    {{ showOnlyFavorites ? 'home' : 'star' }}
-                  </span>
-                </button>
-              </div>
-            </div>
 
-            <div class="row grid-scroll-container">
-              <div class="col-12">
-                <div
-                  *ngIf="showOnlyFavorites && characters.length === 0"
-                  class="info-alert text-center mt-4"
-                >
-                  <span
-                    class="material-symbols-outlined icon-xl blockmb-2"
-                    style="font-variation-settings: 'FILL' 0"
-                    >star</span
-                  >
-                  <p class="mb-0">
-                    No tienes personajes favoritos aún. ¡Empieza a marcar tus
-                    favoritos!
-                  </p>
-                </div>
-                <app-ram-grid [characters]="characters"></app-ram-grid>
-              </div>
+        <div class="grid-content">
+          <div class="action-bar">
+            <ram-input
+              .isLoading=${this.isLoading}
+              @item=${this.onSearch}
+            ></ram-input>
+            <div class="favorites-toolbar">
+              <span class="favorite-button-label">${favoriteLabel}</span>
+              <button
+                class=${this.showOnlyFavorites
+                  ? 'favorite-button favorite-active is-active'
+                  : 'favorite-button favorite-inactive'}
+                @click=${this.toggleFavorite}
+              >
+                <span class="material-symbols-outlined favorite-icon">
+                  ${favoriteIcon}
+                </span>
+              </button>
             </div>
+          </div>
 
-            <app-paginator [isLoading]="isLoading"></app-paginator>
-          </div> -->
+          <div class="grid-scroll-container">
+            <div class="grid-slot" @favorite-change=${this.onFavoriteChanged}>
+              ${this.showOnlyFavorites && this.characters.length === 0
+                ? html`
+                    <div class="info-alert mt-4">
+                      <span
+                        class="material-symbols-outlined icon-xl block mb-2 empty-favorites-icon"
+                        >star</span
+                      >
+                      <p class="mb-0">
+                        No tienes personajes favoritos aún. ¡Empieza a marcar
+                        tus favoritos!
+                      </p>
+                    </div>
+                  `
+                : null}
+              <ram-grid .characters=${this.characters}></ram-grid>
+            </div>
+          </div>
+
+          <app-paginator .isLoading=${this.isLoading}></app-paginator>
+        </div>
       </main>
     `;
   }
