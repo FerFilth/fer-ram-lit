@@ -50,8 +50,8 @@ export class HomeListPage extends LitElement {
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
-        gap: 16px;
-        padding: 18px;
+        gap: 1rem;
+        padding: 18px 18px 9px 18px;
         height: 100%;
         overflow: hidden;
       }
@@ -59,8 +59,8 @@ export class HomeListPage extends LitElement {
       .grid-content {
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto;
-        gap: 16px;
+        grid-template-rows: auto 1fr auto auto;
+        gap: 8px;
         overflow: hidden;
         min-height: 0;
       }
@@ -76,6 +76,32 @@ export class HomeListPage extends LitElement {
       .grid-scroll-container {
         overflow-y: auto;
         min-height: 0;
+        border-radius: 10px;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+      }
+
+      .grid-scroll-container::-webkit-scrollbar {
+        width: 8px; /* Scrollbar más delgado */
+      }
+
+      .grid-scroll-container::-webkit-scrollbar-track {
+        background: transparent; /* Pista invisible */
+        border-radius: 4px;
+      }
+
+      .grid-scroll-container::-webkit-scrollbar-thumb {
+        background-color: var(
+          --border-color
+        ); /* Color sutil adaptado al tema */
+        border-radius: 4px;
+      }
+
+      .grid-scroll-container::-webkit-scrollbar-thumb:hover {
+        background-color: var(
+          --primary-color
+        ); /* Feedback visual al hacer hover */
       }
 
       .section-row,
@@ -158,7 +184,7 @@ export class HomeListPage extends LitElement {
       }
 
       .favorite-button.is-active:hover {
-        background-color: #0056b3;
+        background-color: var(--btn-primary-bg);
         transform: scale(1.05);
       }
 
@@ -181,7 +207,7 @@ export class HomeListPage extends LitElement {
       }
 
       .favorite-button.favorite-active {
-        background-color: #0d6efd;
+        background-color: var(--btn-primary-bg);
       }
 
       .favorite-button.favorite-active .favorite-icon {
@@ -206,6 +232,24 @@ export class HomeListPage extends LitElement {
 
       .empty-favorites-icon {
         font-variation-settings: 'FILL' 0;
+      }
+
+      .micro-footer {
+        text-align: center;
+        padding-top: 6px;
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+      }
+
+      .micro-footer a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .micro-footer a:hover {
+        text-decoration: underline;
       }
 
       @media (max-width: 720px) {
@@ -279,7 +323,7 @@ export class HomeListPage extends LitElement {
     const title = this.showOnlyFavorites
       ? 'Mis favoritos'
       : 'Wubba lubba dub dub!';
-    const favoriteLabel = this.showOnlyFavorites ? 'Home' : 'Mis favoritos';
+    const favoriteLabel = this.showOnlyFavorites ? '' : 'Mis favoritos';
     const favoriteIcon = this.showOnlyFavorites ? 'home' : 'star';
 
     return html`
@@ -335,6 +379,13 @@ export class HomeListPage extends LitElement {
           </div>
 
           <app-paginator .isLoading=${this.isLoading}></app-paginator>
+          <footer class="micro-footer">
+            <p>
+              © 2026 Fernando Gonzalez Zamora. Proyecto desarrollado con
+              Lit.
+            </p>
+            <p>Datos proporcionados por la Rick and Morty API.</p>
+          </footer>
         </div>
       </main>
     `;

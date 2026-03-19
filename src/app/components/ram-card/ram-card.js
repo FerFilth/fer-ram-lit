@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { shadowReset } from '../../styles/shadow-reset.js';
 import { ramStore } from '../../services/ram.service.js';
 import { iconFonts } from '../../styles/icon-fonts.js';
-import spinnerIcon from '../../../assets/lit.svg';
+import spinnerIcon from '../../../assets/svg/loader.svg';
 
 /**
  * @typedef {Object} RamCharacter
@@ -93,8 +93,8 @@ export class RamCard extends LitElement {
 			}
 
 			.ram-card-favorite {
-				min-width: 34px;
-				min-height: 34px;
+				min-width: 24px;
+				min-height: 24px;
 				border-radius: 999px;
 				display: grid;
 				place-items: center;

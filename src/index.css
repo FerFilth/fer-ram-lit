@@ -6,7 +6,7 @@
   --text-color: #111111;
   --surface-color: #ffffff;
   --primary-color: #0b57d0;
-  --border-color: #dee2e6;
+  --border-color: #cbced1;
 
 
   --btn-primary-bg: #313628;
@@ -16,6 +16,8 @@
   --btn-secondary-bg: #ffffff;
   --btn-secondary-text: #313628;
   --btn-secondary-border: #dee2e6;
+
+  --border-color-search: #cbced1;
 
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -36,6 +38,8 @@
   --btn-secondary-bg: #252733;
   --btn-secondary-text: #f5f5f5;
   --btn-secondary-border: #3f4153;
+
+  --border-color-search: #FCBA04;
 }
 *,
 *::before,

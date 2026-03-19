@@ -1,7 +1,4 @@
 class RamStore {
-  /**
-   * Shared app store with API fetching and favorites persistence.
-   */
   constructor() {
     this.FAVORITES_KEY = 'ram-favorites';
     this.PAGE_SIZE = 20;

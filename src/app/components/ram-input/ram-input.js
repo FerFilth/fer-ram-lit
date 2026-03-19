@@ -1,14 +1,11 @@
 import { LitElement, html, css } from 'lit';
 import { shadowReset } from '../../styles/shadow-reset.js';
+
 import { iconFonts } from '../../styles/icon-fonts.js';
 
-/**
- * Search input with debounce and loading state.
- * Emits `item` with the search text to keep Angular migration compatibility.
- */
 export class RamInput extends LitElement {
 	static styles = [
-		shadowReset,iconFonts,
+		shadowReset, iconFonts,
 		css`
 			:host {
 				display: block;
@@ -21,14 +18,15 @@ export class RamInput extends LitElement {
 				display: flex;
 				align-items: stretch;
 				width: 100%;
-				border: 1px solid #c9d1dc;
+				border: 1px solid var(--border-color-search); 
 				border-radius: 0.625rem;
-				background: #ffffff;
+				background: var(--surface-color);
 				overflow: hidden;
 				transition:
 					border-color 0.2s ease,
 					box-shadow 0.2s ease,
-					opacity 0.2s ease;
+					opacity 0.2s ease,
+					background-color 0.3s ease; /* Transición para cuando cambia el tema */
 			}
 
 			.ram-search-root.is-loading {
@@ -36,22 +34,23 @@ export class RamInput extends LitElement {
 			}
 
 			.ram-search-root:focus-within {
-				border-color: #6fa8ff;
-				box-shadow: 0 0 0 0.2rem rgba(79, 146, 255, 0.2);
+				border-color: var(--primary-color); 
+				box-shadow: 0 0 0 0.2rem rgba(79, 146, 255, 0.2); 
 			}
 
 			.ram-search-icon-slot {
-				width: 48px;
-				min-width: 48px;
+				width: 40px; 
+				min-width: 40px; 
 				display: grid;
 				place-items: center;
-				color: #637085;
-				background: #f7f9fc;
-				border-right: 1px solid #d5dce5;
+				background: var(--bg-color); 
+				color: var(--text-color); 
+				border-right: 1px solid var(--border-color);
+				transition: background-color 0.3s ease, color 0.3s ease;
 			}
 
 			.ram-search-icon {
-				font-size: 1.25rem;
+				font-size: 1.15rem; 
 				line-height: 1;
 			}
 
@@ -59,8 +58,8 @@ export class RamInput extends LitElement {
 				width: 18px;
 				height: 18px;
 				border-radius: 50%;
-				border: 2px solid #b2bece;
-				border-top-color: #5a84c7;
+				border: 2px solid var(--border-color);
+				border-top-color: var(--primary-color); 
 				animation: ram-spin 0.75s linear infinite;
 			}
 
@@ -69,14 +68,20 @@ export class RamInput extends LitElement {
 				min-width: 0;
 				border: none;
 				outline: none;
-				padding: 0.65rem 0.8rem;
+				padding: 0.45rem 0.7rem; 
 				background: transparent;
-				color: var(--text-color, #111111);
+				color: var(--text-color); 
+			}
+
+			
+			.ram-search-input::placeholder {
+				color: var(--text-color);
+				opacity: 0.6; 
 			}
 
 			.ram-search-input:disabled {
 				cursor: not-allowed;
-				color: #6b7280;
+				opacity: 0.6;
 			}
 
 			@keyframes ram-spin {
@@ -105,7 +110,7 @@ export class RamInput extends LitElement {
 	}
 
 	disconnectedCallback() {
-		this._clearDebounce();
+		this.#clearDebounce();
 		super.disconnectedCallback();
 	}
 
@@ -115,7 +120,7 @@ export class RamInput extends LitElement {
 	onInputChange(event) {
 		const nextValue = String(event.target?.value ?? '');
 		this.value = nextValue;
-		this._clearDebounce();
+		this.#clearDebounce();
 
 		this._debounceId = window.setTimeout(() => {
 			if (this.isLoading) return;
@@ -131,7 +136,7 @@ export class RamInput extends LitElement {
 		}, this.debounceDelay);
 	}
 
-	_clearDebounce() {
+	#clearDebounce() {
 		if (this._debounceId !== null) {
 			clearTimeout(this._debounceId);
 			this._debounceId = null;
