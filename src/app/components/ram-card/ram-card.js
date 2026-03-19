@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { when } from 'lit/directives/when.js';
 import { shadowReset } from '../../styles/shadow-reset.js';
 import { ramStore } from '../../services/ram.service.js';
 import { iconFonts } from '../../styles/icon-fonts.js';
@@ -154,6 +155,7 @@ export class RamCard extends LitElement {
 		this.hasLoaded = false;
 		this.isFavorite = false;
 		this.onLoad = this.onLoad.bind(this);
+		this.onImageError = this.onImageError.bind(this);
 		this.toggleFavorite = this.toggleFavorite.bind(this);
 		this.openModal = this.openModal.bind(this);
 	}
@@ -166,6 +168,18 @@ export class RamCard extends LitElement {
 		}
 	}
 
+	updated(changedProperties) {
+		if (!changedProperties.has('character')) return;
+
+		const imageEl = this.renderRoot?.querySelector('.ram-card-image');
+		if (!imageEl) return;
+
+		// Si la imagen ya estaba cacheada, `load` puede ocurrir antes del repaint.
+		if (imageEl.complete && imageEl.naturalWidth > 0) {
+			this.hasLoaded = true;
+		}
+	}
+
 	/**
 	 * @returns {string}
 	 */
@@ -174,6 +188,11 @@ export class RamCard extends LitElement {
 	}
 
 	onLoad() {
+		this.hasLoaded = true;
+	}
+
+	onImageError() {
+		// Evita dejar loader infinito cuando falla la imagen.
 		this.hasLoaded = true;
 	}
 
@@ -212,25 +231,27 @@ export class RamCard extends LitElement {
 			<article class="ram-card-root">
 				<div class="ram-card-body">
 					<div class="ram-card-image-box">
-						${!this.hasLoaded
-							? html`
-									<div class="ram-card-loader" aria-hidden="true">
-										<span class="ram-card-spinner">
-											<img
-												class="ram-card-spinner-image"
-												src=${spinnerIcon}
-												alt=""
-											/>
-										</span>
-									</div>
-								`
-							: null}
+						${when(
+							!this.hasLoaded,
+							() => html`
+								<div class="ram-card-loader" aria-hidden="true">
+									<span class="ram-card-spinner">
+										<img
+											class="ram-card-spinner-image"
+											src=${spinnerIcon}
+											alt=""
+										/>
+									</span>
+								</div>
+							`,
+						)}
 
 						<img
 							class="ram-card-image"
 							src=${this.getImage()}
 							alt=${this.character?.name || 'Personaje'}
 							@load=${this.onLoad}
+							@error=${this.onImageError}
 							@click=${this.openModal}
 							style=${this.hasLoaded ? '' : 'display: none;'}
 						/>

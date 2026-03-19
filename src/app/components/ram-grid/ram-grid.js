@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { repeat } from 'lit/directives/repeat.js';
 import { shadowReset } from '../../styles/shadow-reset.js';
 import '../ram-card/ram-card.js';
 
@@ -113,7 +114,9 @@ export class RamGrid extends LitElement {
     return html`
       <div class="ram-grid-shell">
         <div class="ram-grid-cards">
-          ${this.characters.map(
+          ${repeat(
+            this.characters,
+            (item) => item.id,
             (item) => html`
               <article
                 class="ram-grid-card-slot"

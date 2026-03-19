@@ -289,9 +289,8 @@ export class HomeListPage extends LitElement {
     super.connectedCallback();
     this.unsubscribe = ramStore.subscribe((state) => {
       this.isLoading = state.loading;
-      this.characters = this.showOnlyFavorites
-        ? state.characters.filter((item) => state.favorites.has(item.id))
-        : state.characters;
+      this.showOnlyFavorites = state.favoriteMode;
+      this.characters = state.characters;
     });
 
     ramStore.triggerUpdate();
@@ -312,20 +311,13 @@ export class HomeListPage extends LitElement {
   }
 
   toggleFavorite() {
-    this.showOnlyFavorites = !this.showOnlyFavorites;
-    const state = ramStore.getState();
-    this.characters = this.showOnlyFavorites
-      ? state.characters.filter((item) => state.favorites.has(item.id))
-      : state.characters;
+    ramStore.setFavoriteMode(!this.showOnlyFavorites);
   }
 
   onFavoriteChanged() {
     if (!this.showOnlyFavorites) return;
 
-    const state = ramStore.getState();
-    this.characters = state.characters.filter((item) =>
-      state.favorites.has(item.id),
-    );
+    ramStore.triggerUpdate();
   }
 
   /**
