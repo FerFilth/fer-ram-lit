@@ -52,6 +52,19 @@ export class AppComponent extends LitElement {
     };
   }
 
+  toggleTheme() {
+    const root = document.documentElement;
+    const currentTheme = root.getAttribute('data-theme');
+
+    if (currentTheme === 'dark') {
+      root.removeAttribute('data-theme'); // o setAttribute('data-theme', 'light')
+      localStorage.setItem('theme', 'light'); // Opcional: guardar preferencia
+    } else {
+      root.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark'); // Opcional: guardar preferencia
+    }
+  }
+
   getSearchQueryFromUrl() {
     const queryParams = new URLSearchParams(window.location.search);
     return queryParams.get('search') || '';

@@ -4,6 +4,10 @@ export class HomeListPage extends LitElement {
   static styles = [
     shadowReset,
     css`
+      :host {
+        background: var(--color-bg);
+        color: var(--color-text);
+      }
       .home-container {
         width: 100%;
         max-width: 1200px;
@@ -11,6 +15,7 @@ export class HomeListPage extends LitElement {
       }
 
       .grid-home-page {
+        background-color: var(--bg-color);
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
@@ -50,16 +55,16 @@ export class HomeListPage extends LitElement {
         text-align: center;
       }
 
-      .mb-3 {
-        margin-bottom: 1rem;
+      .mb-0 {
+        margin-bottom: 0;
       }
 
       .mb-2 {
         margin-bottom: 0.5rem;
       }
 
-      .mb-0 {
-        margin-bottom: 0;
+      .mb-3 {
+        margin-bottom: 1rem;
       }
 
       .mt-4 {
@@ -167,17 +172,18 @@ export class HomeListPage extends LitElement {
   render() {
     return html`
       <main class="home-container grid-home-page">
-        <!-- <section class="section-row">
-            <div class="full-col">
-              <h1 class="center-text mb-3">
-                {{ !showOnlyFavorites ? 'Wubba lubba dub dub!' : 'Mis favoritos'
-                }}
-              </h1>
-              <p class="mb-3 center-text">
-                Base de datos de personajes de Rick y Morty
-              </p>
-            </div>
-          </section>
+        <section class="section-row">
+          <div class="full-col">
+            <h1 class="center-text mb-3">
+              {{ !showOnlyFavorites ? 'Wubba lubba dub dub!' : 'Mis favoritos'
+              }}
+            </h1>
+            <p class="mb-3 center-text">
+              Base de datos de personajes de Rick y Morty
+            </p>
+          </div>
+        </section>
+        <!--
           <div class="grid-content">
             <div class="action-bar">
               <app-ram-input
