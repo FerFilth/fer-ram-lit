@@ -29,6 +29,8 @@ export class HomeListPage extends LitElement {
     modalCharacter: { state: true },
     /** @type {boolean} */
     isModalOpen: { state: true },
+    /** @type {'light'|'dark'} */
+    currentTheme: { state: true },
   };
 
   static styles = [
@@ -114,6 +116,44 @@ export class HomeListPage extends LitElement {
         width: 100%;
       }
 
+      .header-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 0.5rem;
+      }
+
+      .theme-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 38px;
+        min-height: 38px;
+        border: 1px solid var(--border-color, #cbced1);
+        border-radius: 999px;
+        background: var(--surface-color, #ffffff);
+        color: var(--text-color, #111111);
+        transition:
+          transform 0.2s ease,
+          background-color 0.2s ease,
+          color 0.2s ease,
+          border-color 0.2s ease;
+      }
+
+      .theme-toggle-btn:hover {
+        transform: translateY(-1px);
+        background: var(--btn-secondary-bg, #ffffff);
+        border-color: var(--btn-secondary-border, #dee2e6);
+      }
+
+      .theme-toggle-icon {
+        font-size: 1.2rem;
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 500,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+
       .center-text {
         text-align: center;
       }
@@ -164,7 +204,7 @@ export class HomeListPage extends LitElement {
         transition: all 0.2s ease;
         border: none;
         padding: 8px;
-        border-radius: 5px;
+        border-radius: 50%;
         cursor: pointer;
       }
 
@@ -227,12 +267,37 @@ export class HomeListPage extends LitElement {
         color: #6c757d;
       }
 
+      :host([theme='dark']) .favorite-button,
+      :host([theme='dark']) .favorite-button.favorite-active,
+      :host([theme='dark']) .favorite-button.favorite-inactive {
+        background-color: var(--surface-color);
+      }
+
+      :host([theme='dark']) .favorite-button .favorite-icon,
+      :host([theme='dark']) .favorite-button.favorite-active .favorite-icon,
+      :host([theme='dark']) .favorite-button.favorite-inactive .favorite-icon {
+        color: #fff;
+      }
+
+      :host([theme='dark']) .favorite-button:hover,
+      :host([theme='dark']) .favorite-button.is-active:hover,
+      :host([theme='dark']) .favorite-button:not(.is-active):hover {
+        background-color: #000;
+      }
+
+      :host([theme='dark']) .favorite-button:hover .favorite-icon,
+      :host([theme='dark']) .favorite-button.is-active:hover .favorite-icon,
+      :host([theme='dark']) .favorite-button:not(.is-active):hover .favorite-icon {
+        color: #fff;
+      }
+
       .favorite-button-label {
         font-weight: 600;
       }
 
       .grid-slot {
         width: 100%;
+        height: 100%;
       }
 
       .empty-favorites-icon {
@@ -277,16 +342,31 @@ export class HomeListPage extends LitElement {
     this.showOnlyFavorites = false;
     this.modalCharacter = null;
     this.isModalOpen = false;
+    this.currentTheme =
+      document.documentElement.getAttribute('data-theme') === 'dark'
+        ? 'dark'
+        : 'light';
     this.unsubscribe = null;
     this.onSearch = this.onSearch.bind(this);
     this.toggleFavorite = this.toggleFavorite.bind(this);
     this.onFavoriteChanged = this.onFavoriteChanged.bind(this);
     this.onOpenCharacterModal = this.onOpenCharacterModal.bind(this);
     this.onCloseCharacterModal = this.onCloseCharacterModal.bind(this);
+    this.toggleTheme = this.toggleTheme.bind(this);
+    this.onThemeAttributeMutation = this.onThemeAttributeMutation.bind(this);
+    this.themeObserver = null;
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this.syncThemeFromDocument();
+
+    this.themeObserver = new MutationObserver(this.onThemeAttributeMutation);
+    this.themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
     this.unsubscribe = ramStore.subscribe((state) => {
       this.isLoading = state.loading;
       this.showOnlyFavorites = state.favoriteMode;
@@ -300,7 +380,25 @@ export class HomeListPage extends LitElement {
     if (typeof this.unsubscribe === 'function') {
       this.unsubscribe();
     }
+
+    this.themeObserver?.disconnect();
+    this.themeObserver = null;
+
     super.disconnectedCallback();
+  }
+
+  onThemeAttributeMutation() {
+    this.syncThemeFromDocument();
+  }
+
+  syncThemeFromDocument() {
+    const theme =
+      document.documentElement.getAttribute('data-theme') === 'dark'
+        ? 'dark'
+        : 'light';
+
+    this.currentTheme = theme;
+    this.setAttribute('theme', theme);
   }
 
   /**
@@ -335,17 +433,47 @@ export class HomeListPage extends LitElement {
     this.isModalOpen = false;
   }
 
+  toggleTheme() {
+    const root = document.documentElement;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+
+    if (isDark) {
+      root.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      this.syncThemeFromDocument();
+      return;
+    }
+
+    root.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+    this.syncThemeFromDocument();
+  }
+
   render() {
     const title = this.showOnlyFavorites
       ? 'Mis favoritos'
       : 'Wubba lubba dub dub!';
     const favoriteLabel = this.showOnlyFavorites ? '' : 'Mis favoritos';
     const favoriteIcon = this.showOnlyFavorites ? 'home' : 'star';
+    const themeIcon = this.currentTheme === 'dark' ? 'light_mode' : 'dark_mode';
+    const themeAriaLabel =
+      this.currentTheme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
 
     return html`
       <main class="home-container grid-home-page">
         <section class="section-row">
           <div class="full-col">
+            <div class="header-actions">
+              <button
+                class="theme-toggle-btn"
+                type="button"
+                @click=${this.toggleTheme}
+                aria-label=${themeAriaLabel}
+                title=${themeAriaLabel}
+              >
+                <span class="material-symbols-outlined theme-toggle-icon">${themeIcon}</span>
+              </button>
+            </div>
             <h1 class="center-text mb-3">${title}</h1>
             <p class="mb-3 center-text">
               Base de datos de personajes de Rick y Morty
@@ -404,7 +532,7 @@ export class HomeListPage extends LitElement {
               © 2026 Fernando Gonzalez Zamora. Proyecto desarrollado con
               Lit.
             </p>
-            <p>Datos proporcionados por la Rick and Morty API.</p>
+            <p>Datos proporcionados por la API de Rick and Morty.</p>
           </footer>
         </div>
 

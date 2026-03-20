@@ -40,6 +40,7 @@ export class RamGrid extends LitElement {
 
       .ram-grid-empty-state {
         min-height: 220px;
+		height: 100%;
         display: grid;
         place-items: center;
         text-align: center;
