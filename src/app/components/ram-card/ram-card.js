@@ -3,7 +3,8 @@ import { when } from 'lit/directives/when.js';
 import { shadowReset } from '../../styles/shadow-reset.js';
 import { ramStore } from '../../services/ram.service.js';
 import { iconFonts } from '../../styles/icon-fonts.js';
-import spinnerIcon from '../../../assets/svg/loader.svg';
+
+const spinnerIcon = '/src/assets/svg/loader.svg';
 
 /**
  * @typedef {Object} RamCharacter
