@@ -1,5 +1,6 @@
 :root {
   color-scheme: light dark;
+  --font-family-base: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   
   /* Base (tema claro por defecto) */
   --bg-color: #fdfbf6;
@@ -109,6 +110,7 @@ body {
   display: block;
   min-width: 320px;
   min-height: 100svh;
+  font-family: var(--font-family-base);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

@@ -9,6 +9,13 @@ export const shadowReset = css`
     box-sizing: border-box;
   }
 
+  :host {
+    font-family: var(
+      --font-family-base,
+      'Roboto',
+    );
+  }
+
   /* 2. Quitar márgenes y paddings por defecto en elementos comunes */
   h1, h2, h3, h4, h5, h6, 
   p, figure, blockquote, dl, dd {
