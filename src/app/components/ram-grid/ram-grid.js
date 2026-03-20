@@ -1,17 +1,14 @@
-import { LitElement, html, css } from 'lit';
-import { repeat } from 'lit/directives/repeat.js';
-import { shadowReset } from '../../styles/shadow-reset.js';
-import '../ram-card/ram-card.js';
+import { LitElement, html, css } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+import { shadowReset } from "../../styles/shadow-reset.js";
+import "../ram-card/ram-card.js";
 
 /**
  * @typedef {Object} RamCharacter
- * @property {number} id - Unique character id from the API.
- * @property {string} name - Character display name.
+ * @property {number} id
+ * @property {string} name
  */
 
-/**
- * Responsive card grid for the Rick and Morty character collection.
- */
 export class RamGrid extends LitElement {
   static styles = [
     shadowReset,
@@ -40,7 +37,7 @@ export class RamGrid extends LitElement {
 
       .ram-grid-empty-state {
         min-height: 220px;
-		height: 100%;
+        height: 100%;
         display: grid;
         place-items: center;
         text-align: center;
@@ -133,4 +130,4 @@ export class RamGrid extends LitElement {
   }
 }
 
-customElements.define('ram-grid', RamGrid);
+customElements.define("ram-grid", RamGrid);

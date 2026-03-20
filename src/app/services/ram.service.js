@@ -61,8 +61,8 @@ class RamStore {
   }
 
   /**
-    * Obtiene personajes favoritos por IDs.
-    * La API devuelve un objeto para un solo id y un arreglo para multiples ids.
+    * Obtiene personajes favoritos por IDs
+    * La API devuelve un objeto para un solo id y un arreglo para multiples ids
    * @param {number[]} ids
    * @param {AbortSignal} [signal]
    * @returns {Promise<Array<object>>}
@@ -84,7 +84,7 @@ class RamStore {
   }
 
   /**
-    * Construye la respuesta paginada a partir de IDs favoritos,
+    * construye la respuesta paginada a partir de IDs favoritos
     * busqueda local y paginacion local.
    * @param {number} page
    * @param {string} search
@@ -132,7 +132,7 @@ class RamStore {
   }
 
   /**
-    * Dispara la carga de datos segun el modo actual:
+    * Existe dos manera de traer los personajes dependiendo del modo en el que estemos:
     * modo normal => paginacion por API
     * modo favoritos => paginacion local + busqueda local sobre IDs favoritos
    */

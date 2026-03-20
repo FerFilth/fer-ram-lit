@@ -71,11 +71,11 @@ export class AppComponent extends LitElement {
     const currentTheme = root.getAttribute('data-theme');
 
     if (currentTheme === 'dark') {
-      root.removeAttribute('data-theme'); // o setAttribute('data-theme', 'light')
-      localStorage.setItem('theme', 'light'); // Opcional: guardar preferencia
+      root.removeAttribute('data-theme'); 
+      localStorage.setItem('theme', 'light'); 
     } else {
       root.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark'); // Opcional: guardar preferencia
+      localStorage.setItem('theme', 'dark'); 
     }
   }
 
@@ -123,7 +123,6 @@ export class AppComponent extends LitElement {
       case '/rick-and-morty/error':
         return html`<error-page></error-page>`;
       default:
-        // Si no conoce la ruta, mostramos error
         return html`<error-page></error-page>`;
     }
   }
