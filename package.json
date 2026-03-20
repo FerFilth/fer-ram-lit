@@ -6,12 +6,18 @@
   "scripts": {
     "dev": "vite --open",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "web-test-runner --config web-test-runner.config.mjs",
+    "test:watch": "web-test-runner --config web-test-runner.config.mjs --watch"
   },
   "dependencies": {
     "lit": "^3.3.2"
   },
   "devDependencies": {
+    "@open-wc/testing": "^4.0.0",
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-playwright": "^0.11.1",
+    "sinon": "^21.0.0",
     "vite": "^8.0.0"
   }
 }
